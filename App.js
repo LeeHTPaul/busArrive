@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
 
@@ -7,11 +6,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   const busStop = "55031";
+  const busNo   = "854";
   const BUSSTOP_URL =  `https://arrivelah2.busrouter.sg/?id=${busStop}`;
   //console.log(BUSSTOP_URL);
-  
-
-
   //BUSSTOP_URL = "https://arrivelah2.busrouter.sg/?id=55031";
 
   const [arrival, setArrival] = useState("");
@@ -28,7 +25,7 @@ export default function App() {
       .then((responseData) => {
         //console.log("logging ...", responseData);
         const myBus = responseData.services.filter( 
-          (item) => item.no === "854"
+          (item) => item.no === busNo
         )[0];
         console.log("My bus :", new Date(myBus.next.time).getHours());
         console.log(myBus);
@@ -37,8 +34,8 @@ export default function App() {
         var minutes = Math.floor(myBus.next.duration_ms/60000);
         var minutes2 = Math.floor(myBus.next2.duration_ms/60000);
         
-        setMinutes(minutes>1 ? minutes : 0);
-        setMinutes2(minutes2>1 ? minutes2 : 0);
+        setMinutes(minutes>0 ? minutes : 0);
+        setMinutes2(minutes2>0 ? minutes2 : 0);
         //setArrival(Date(myBus.next.time).toLocaleTimeString("en-SG"));
         setLoading(false);
       });
@@ -54,15 +51,13 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text} >Bus Arrival Time : </Text>
+      <Text style={styles.text} >Bus {busNo} Arrival Time  </Text>
+      <Text style={styles.text} >at Bus Stop {busStop}  </Text>
       <Text style={styles.arrivalTime}>
-        {loading ? <ActivityIndicator size="large" /> : arrival}
+        {loading ? <ActivityIndicator size="large" /> : arrival} - {minutes} minutes 
       </Text>
       <Text style={styles.arrivalTime}>
-        {minutes} minutes
-      </Text>
-      <Text style={styles.arrivalTime}>
-        {minutes2} minutes
+        next bus - {minutes2} minutes
       </Text>
       <TouchableOpacity onPress={() => loadBusStopData()} style={styles.button}>
       <Text style={styles.buttonText}>Refresh</Text>
@@ -84,7 +79,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     padding: 10,
-    margin: 10,
+    margin: 2,
 
   },
 
